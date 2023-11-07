@@ -1,0 +1,5 @@
+{
+    "git.ignoreLimitWarning": true,
+    "java.compile.nullAnalysis.mode": "automatic",
+    "cmake.sourceDirectory": "C:/Users/rhh22/flutter/face/face_appliction/linux"
+}
