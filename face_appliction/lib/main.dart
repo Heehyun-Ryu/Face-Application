@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 //import 'package:face_appliction/photo_detail.dart';
 import 'package:face_appliction/register.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:camera/camera.dart';
+import 'package:face_appliction/take_picture.dart';
 
 void main() => runApp(MaterialApp(
       title: "Face Applicaion",
@@ -72,12 +74,16 @@ class _HomepageState extends State<Homepage> {
           Expanded(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(minimumSize: Size(10, 50)),
-              onPressed: () {
-                /*Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Classified_photo()),
-                );*/
-                getImage(ImageSource.camera);
+              onPressed: () async {
+                await availableCameras().then((value) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => CameraPage(cameras: value))));
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => CameraPage(cameras: ,)),
+                // );
+                // getImage(ImageSource.camera);    //image_picker
               },
               child: Text(
                 'Camera',

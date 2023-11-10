@@ -26,7 +26,9 @@
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to camera when used</string>
 	<key>NSMicrophoneUsageDescription</key>
+	<string>This is app needs access to microphone when used</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
