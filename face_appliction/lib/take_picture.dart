@@ -1,8 +1,9 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:face_appliction/reivew.dart';
 //import 'package:image_picker/image_picker.dart';
 
 class CameraPage extends StatefulWidget {
@@ -19,7 +20,9 @@ class _CameraPageState extends State<CameraPage> {
   // String baseUri = 'http://192.168.0.2:8080';
   //String baseUri = 'http://10.0.0.2:8080';
   //String baseUri = 'https://172.30.1.68:8080';
-  String baseUri = 'https://172.30.1.100:8080';
+  // String baseUri = 'https://172.30.1.100:8080';
+
+  String baseUri = 'http://192.168.0.9:8080';
 
   Future initCamera(CameraDescription cameraDescription) async {
     _cameraController =
@@ -36,7 +39,7 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
-  Future<XFile?> takePicture() async {
+  Future<File?> takePicture() async {
     if (!_cameraController.value.isInitialized) {
       return null;
     }
@@ -44,24 +47,11 @@ class _CameraPageState extends State<CameraPage> {
       return null;
     }
     try {
-      await _cameraController.setFlashMode(FlashMode.off); //
+      await _cameraController.setFlashMode(FlashMode.off);
+
       XFile picture = await _cameraController.takePicture();
-      return picture;
-      // var formData;
-      // if (picture != null) {
-      //   dynamic sendData = picture.path;
-      //   formData = //이미지의 경로로 변환
-      //       FormData.fromMap({
-      //     'image': await MultipartFile.fromFile(sendData)
-      //   }); //formData 형식으로 변환
-      // }
 
-      // return formData;
-
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (context) => PreviewPage(picture: picture)));
+      return File(picture.path);
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');
       return null;
@@ -90,7 +80,7 @@ class _CameraPageState extends State<CameraPage> {
   //   }
   // }
 
-  Future<void> UplaodImage(XFile? picture) async {
+  Future<void> UplaodImage(File? picture) async {
     var dio = new Dio();
     print("프로필 사진을 서버에 업로드 합니다.");
     try {
@@ -102,8 +92,8 @@ class _CameraPageState extends State<CameraPage> {
 
       //dio.options.headers = {'token': token};     //api token 구현하지 않음.
       var response = await dio.post(
-        //baseUri + '/upload',
-        'http://172.30.1.100:8080/upload',
+        baseUri + '/upload',
+        // 'http://172.30.1.100:8080/upload',
         data: formData,
       );
       print('성공적으로 업로드했습니다');
@@ -120,12 +110,6 @@ class _CameraPageState extends State<CameraPage> {
   void initState() {
     super.initState();
     initCamera(widget.cameras![0]);
-  }
-
-  @override
-  void dispose() {
-    _cameraController.dispose();
-    super.dispose();
   }
 
   @override
@@ -172,7 +156,7 @@ class _CameraPageState extends State<CameraPage> {
                 Expanded(
                   child: IconButton(
                     onPressed: () async {
-                      XFile? picture = await takePicture();
+                      File? picture = await takePicture();
                       if (picture != null) {
                         await UplaodImage(picture);
                       }
@@ -190,5 +174,11 @@ class _CameraPageState extends State<CameraPage> {
         )
       ])),
     );
+  }
+
+  @override
+  void dispose() {
+    _cameraController.dispose();
+    super.dispose();
   }
 }
