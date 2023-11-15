@@ -1,10 +1,14 @@
-//import 'dart:html';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 //import 'package:face_appliction/photo_detail.dart';
 import 'package:face_appliction/register.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
 import 'package:face_appliction/take_picture.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:face_appliction/ImageHub.dart';
 
 void main() => runApp(MaterialApp(
       title: "Face Applicaion",
@@ -20,9 +24,24 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  String baseUri = 'http://192.168.0.9:8080';
+  var url = Uri.parse('http://192.168.0.9:8080/classify');
+
+  ImageHub? imageHub;
+
   @override
   void initState() {
     super.initState();
+    fetchData();
+  }
+
+  fetchData() async {
+    var res = await http.get(url);
+    var decordedJSON = jsonDecode(res.body);
+
+    setState(() {
+      imageHub = ImageHub.fromJson(decordedJSON);
+    });
   }
 
   XFile? _image;
@@ -52,15 +71,54 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
+    //세로로 고정하는 부분
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    print("object");
+    print(imageHub?.data['cat']?[0].name);
+    print(imageHub?.data['cat']?[0].path);
+    print(imageHub?.data.keys.toList());
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Face Applicaion"),
         backgroundColor: Colors.blue,
       ),
       body: GridView.count(
-        crossAxisCount: 2,
-        //child: 얼굴 썸네일 부분
-      ),
+          crossAxisCount: 2,
+          children: (imageHub?.data.entries ?? [])
+              .map((entry) => entry.value
+                  .where((img) => entry.key == img.name)
+                  .map((img) => Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Card(
+                            elevation: 3.0,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Container(
+                                  height: 160.0,
+                                  width: 160.0,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(img.path),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  img.name,
+                                  style: TextStyle(
+                                    fontSize: 23,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 5.0,
+                                  ),
+                                ),
+                              ],
+                            )),
+                      ))
+                  .toList())
+              .expand((element) => element)
+              .toList()),
       drawer: Drawer(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
@@ -79,6 +137,10 @@ class _HomepageState extends State<Homepage> {
                     context,
                     MaterialPageRoute(
                         builder: (_) => CameraPage(cameras: value))));
+
+                //다시 돌아와도 세로 고정이 유지될 수 있도록 하는 코드!
+                SystemChrome.setPreferredOrientations(
+                    [DeviceOrientation.portraitUp]);
                 // Navigator.push(
                 //   context,
                 //   MaterialPageRoute(builder: (context) => CameraPage(cameras: ,)),
