@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-//import 'package:face_appliction/photo_detail.dart';
+// import 'package:face_appliction/photo_detail.dart';
 import 'package:face_appliction/register.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
@@ -9,6 +9,7 @@ import 'package:face_appliction/take_picture.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:face_appliction/ImageHub.dart';
+import 'package:face_appliction/Classified_photo.dart';
 
 void main() => runApp(MaterialApp(
       title: "Face Applicaion",
@@ -26,6 +27,8 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   String baseUri = 'http://192.168.0.9:8080';
   var url = Uri.parse('http://192.168.0.9:8080/classify');
+
+  // var url = Uri.parse('http://192.168.0.79:8080/classify');
 
   ImageHub? imageHub;
 
@@ -84,44 +87,91 @@ class _HomepageState extends State<Homepage> {
         backgroundColor: Colors.blue,
       ),
       body: GridView.count(
-          crossAxisCount: 2,
-          children: (imageHub?.data.entries ?? [])
-              .map((entry) => entry.value
-                  .where((img) => entry.key == img.name)
-                  .map((img) => Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Card(
-                            elevation: 3.0,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Container(
-                                  height: 160.0,
-                                  width: 160.0,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: NetworkImage(img.path),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
+        crossAxisCount: 2,
+        children: (imageHub?.data.entries ?? [])
+            .map((entry) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Classified_photo(
+                                    data: entry,
+                                  )));
+                    },
+                    child: Card(
+                        elevation: 3.0,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Container(
+                              height: 150,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(entry.value
+                                      .firstWhere(
+                                          (element) =>
+                                              element.name == entry.key,
+                                          orElse: () => entry.value[0])
+                                      .path),
+                                  fit: BoxFit.cover,
                                 ),
-                                Text(
-                                  img.name,
-                                  style: TextStyle(
-                                    fontSize: 23,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 5.0,
-                                  ),
-                                ),
-                              ],
-                            )),
-                      ))
-                  .toList())
-              .expand((element) => element)
-              .toList()),
+                              ),
+                            ),
+                            Text(
+                              entry.key,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 3.0),
+                            ),
+                          ],
+                        )),
+                  ),
+                ))
+            .toList(),
+      ),
+      // children: (imageHub?.data.entries ?? [])
+      //     .map((entry) => entry.value
+      //         // .where((img) => entry.key == img.name)
+      //         .map((img) => Padding(
+      //               padding: const EdgeInsets.all(2.0),
+      //               child: Card(
+      //                   elevation: 3.0,
+      //                   child: Column(
+      //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //                     children: <Widget>[
+      //                       Container(
+      //                         height: 160.0,
+      //                         width: 160.0,
+      //                         decoration: BoxDecoration(
+      //                           image: DecorationImage(
+      //                             image: NetworkImage(img.path),
+      //                             fit: BoxFit.cover,
+      //                           ),
+      //                         ),
+      //                       ),
+      //                       Text(
+      //                         img.name,
+      //                         style: TextStyle(
+      //                           fontSize: 23,
+      //                           fontWeight: FontWeight.bold,
+      //                           letterSpacing: 5.0,
+      //                         ),
+      //                       ),
+      //                     ],
+      //                   )),
+      //             ))
+      //         .toList())
+      //     .expand((element) => element)
+      //     .toList()),
       drawer: Drawer(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          fetchData();
+        },
         backgroundColor: Colors.cyan,
         child: Icon(Icons.refresh),
       ),
