@@ -88,44 +88,54 @@ class _HomepageState extends State<Homepage> {
       ),
       body: GridView.count(
         crossAxisCount: 2,
+        // childAspectRatio: .9,
         children: (imageHub?.data.entries ?? [])
             .map((entry) => Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(1.0),
                   child: InkWell(
                     onTap: () {
                       Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => Classified_photo(
-                                    data: entry,
-                                  )));
+                          // MaterialPageRoute(
+                          SlideRoute(
+                            builder: (context) => Classified_photo(
+                              data: entry,
+                            ),
+                            settings: RouteSettings(name: '/classified_photo'),
+                          ));
                     },
                     child: Card(
                         elevation: 3.0,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Container(
-                              height: 150,
-                              width: 150,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(entry.value
-                                      .firstWhere(
-                                          (element) =>
-                                              element.name == entry.key,
-                                          orElse: () => entry.value[0])
-                                      .path),
-                                  fit: BoxFit.cover,
+                            Expanded(
+                              flex: 6,
+                              child: Container(
+                                height: 150,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage(entry.value
+                                        .firstWhere(
+                                            (element) =>
+                                                element.name == entry.key,
+                                            orElse: () => entry.value[0])
+                                        .path),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ),
-                            Text(
-                              entry.key,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 3.0),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                entry.key,
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 3.0),
+                              ),
                             ),
                           ],
                         )),
@@ -222,6 +232,26 @@ class _HomepageState extends State<Homepage> {
           ),
         ]),
       ),
+    );
+  }
+}
+
+class SlideRoute<T> extends MaterialPageRoute<T> {
+  SlideRoute({required WidgetBuilder builder, required RouteSettings settings})
+      : super(builder: builder, settings: settings);
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    if (settings.name == '/') {
+      return child;
+    }
+
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: Offset(1, 0),
+        end: Offset.zero,
+      ).animate(animation),
+      child: child,
     );
   }
 }

@@ -26,9 +26,9 @@ class _CameraPageState extends State<CameraPage> {
   // String baseUri = 'http://192.168.35.61:8080';
 
   //Dorm
-  // String baseUri = 'http://192.168.0.9:8080';
+  String baseUri = 'http://192.168.0.9:8080';
 
-  String baseUri = 'http://192.168.0.79:8080';
+  // String baseUri = 'http://192.168.0.79:8080'
 
   // String baseUri = 'http://192.168.0.13:8080';
 
