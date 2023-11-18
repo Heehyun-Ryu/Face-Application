@@ -5,7 +5,7 @@ import 'package:expandable_page_view/expandable_page_view.dart';
 
 class Photo_detail extends StatefulWidget {
   final data;
-  int? idx;
+  final int? idx;
   Photo_detail({this.data, this.idx});
 
   @override
@@ -41,18 +41,38 @@ class _Photo_detailState extends State<Photo_detail> {
         controller: controller,
         itemBuilder: (context, index) {
           final item = photoList[index];
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            // child: Text(item),
-            child: Center(
-              child: Image.network(item),
-            ),
-            // decoration: BoxDecoration(
-            //   image: DecorationImage(
-            //     image: NetworkImage(item),
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
+          return Stack(
+            children: [
+              Hero(
+                tag: item,
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  // child: Text(item),
+                  child: Center(
+                    child: Image.network(item),
+                  ),
+                  // decoration: BoxDecoration(
+                  //   image: DecorationImage(
+                  //     image: NetworkImage(item),
+                  //     fit: BoxFit.cover,
+                  //   ),
+                  // ),
+                ),
+              ),
+              Positioned(
+                top: 35,
+                left: 20,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                ),
+              )
+            ],
           );
         },
       ),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 // import 'package:face_appliction/photo_detail.dart';
 import 'package:face_appliction/register.dart';
@@ -25,8 +24,8 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  String baseUri = 'http://192.168.0.9:8080';
-  var url = Uri.parse('http://192.168.0.9:8080/classify');
+  // var url = Uri.parse('http://192.168.0.9:8080/classify');
+  var url = Uri.parse('$baseUri/classify');
 
   // var url = Uri.parse('http://192.168.0.79:8080/classify');
 

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
+import 'package:face_appliction/ImageHub.dart';
 //import 'package:image_picker/image_picker.dart';
 
 class CameraPage extends StatefulWidget {
@@ -26,7 +27,7 @@ class _CameraPageState extends State<CameraPage> {
   // String baseUri = 'http://192.168.35.61:8080';
 
   //Dorm
-  String baseUri = 'http://192.168.0.9:8080';
+  // String baseUri = 'http://192.168.0.9:8080';
 
   // String baseUri = 'http://192.168.0.79:8080'
 
