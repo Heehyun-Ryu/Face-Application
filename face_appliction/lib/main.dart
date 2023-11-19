@@ -178,6 +178,7 @@ class _HomepageState extends State<Homepage> {
       //     .toList()),
       drawer: Drawer(),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'refresh',
         onPressed: () {
           fetchData();
         },
@@ -192,19 +193,14 @@ class _HomepageState extends State<Homepage> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(minimumSize: Size(10, 50)),
               onPressed: () async {
-                await availableCameras().then((value) => Navigator.push(
+                await availableCameras().then(
+                  (value) => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => CameraPage(cameras: value))));
-
-                //다시 돌아와도 세로 고정이 유지될 수 있도록 하는 코드!
-                SystemChrome.setPreferredOrientations(
-                    [DeviceOrientation.portraitUp]);
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => CameraPage(cameras: ,)),
-                // );
-                // getImage(ImageSource.camera);    //image_picker
+                      builder: (_) => CameraPage(cameras: value),
+                    ),
+                  ),
+                );
               },
               child: Text(
                 'Camera',

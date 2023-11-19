@@ -34,47 +34,52 @@ class _Photo_detailState extends State<Photo_detail> {
   @override
   Widget build(BuildContext context) {
     final PageController controller = PageController(initialPage: idx ?? 0);
-
-    return Container(
-      child: ExpandablePageView.builder(
-        itemCount: photoList.length,
-        controller: controller,
-        itemBuilder: (context, index) {
-          final item = photoList[index];
-          return Stack(
-            children: [
-              Hero(
-                tag: item,
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  // child: Text(item),
-                  child: Center(
-                    child: Image.network(item),
-                  ),
-                  // decoration: BoxDecoration(
-                  //   image: DecorationImage(
-                  //     image: NetworkImage(item),
-                  //     fit: BoxFit.cover,
-                  //   ),
-                  // ),
-                ),
-              ),
-              Positioned(
-                top: 35,
-                left: 20,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
+    return SafeArea(
+      child: Container(
+        child: ExpandablePageView.builder(
+          itemCount: photoList.length,
+          controller: controller,
+          itemBuilder: (context, index) {
+            final item = photoList[index];
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                Hero(
+                  tag: item,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    // child: Text(item),
+                    child: Center(
+                      child: Image.network(
+                        item,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    // decoration: BoxDecoration(
+                    //   image: DecorationImage(
+                    //     image: NetworkImage(item),
+                    //     fit: BoxFit.cover,
+                    //   ),
+                    // ),
                   ),
                 ),
-              )
-            ],
-          );
-        },
+                Positioned(
+                  top: 35,
+                  left: 20,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
+        ),
       ),
     );
   }
