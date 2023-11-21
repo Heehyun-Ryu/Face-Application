@@ -154,14 +154,23 @@ class _CameraPageState extends State<CameraPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: (_cameraController.value.isInitialized)
-            ? CameraPreview(_cameraController)
-            : Container(
-                color: Colors.black,
-              ),
+      body: Center(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: _cameraController.value.previewSize!.height,
+              height: _cameraController.value.previewSize!.width,
+              child: (_cameraController.value.isInitialized)
+                  ? CameraPreview(_cameraController)
+                  : Container(
+                      color: Colors.black,
+                    ),
+            ),
+          ),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Stack(
