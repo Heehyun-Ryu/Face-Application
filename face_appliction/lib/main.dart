@@ -76,8 +76,8 @@ class _HomepageState extends State<Homepage> {
     //세로로 고정하는 부분
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     print("object");
-    print(imageHub?.data['cat']?[0].name);
-    print(imageHub?.data['cat']?[0].path);
+    print(imageHub?.data['고양이']?[0].name);
+    print(imageHub?.data['고양이']?[0].path);
     print(imageHub?.data.keys.toList());
 
     return Scaffold(
@@ -115,12 +115,8 @@ class _HomepageState extends State<Homepage> {
                                 width: 150,
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
-                                    image: NetworkImage(entry.value
-                                        .firstWhere(
-                                            (element) =>
-                                                element.name == entry.key,
-                                            orElse: () => entry.value[0])
-                                        .path),
+                                    image: NetworkImage(
+                                        '${entry.value.firstWhere((element) => element.name == entry.key, orElse: () => entry.value[0]).path}?t=${DateTime.now().millisecond}'),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -179,9 +175,7 @@ class _HomepageState extends State<Homepage> {
       drawer: Drawer(),
       floatingActionButton: FloatingActionButton(
         heroTag: 'refresh',
-        onPressed: () {
-          fetchData();
-        },
+        onPressed: fetchData,
         backgroundColor: Colors.cyan,
         child: Icon(Icons.refresh),
       ),
