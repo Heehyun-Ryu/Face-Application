@@ -51,7 +51,7 @@ class _Photo_detailState extends State<Photo_detail> {
                     child: Center(
                       child: Image.network(
                         // item,
-                        '${item}?t=${DateTime.now().millisecond}',
+                        '${item}',
                         fit: BoxFit.contain,
                       ),
                     ),

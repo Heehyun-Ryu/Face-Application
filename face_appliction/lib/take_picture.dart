@@ -23,11 +23,6 @@ class _CameraPageState extends State<CameraPage> {
   late CustomOrientation cameraOrientation = CustomOrientation.portrait;
 
   late StreamSubscription<AccelerometerEvent> accelerometerSub;
-  //Dorm
-  // String baseUri = 'http://192.168.0.9:8080';
-
-  //jetson
-  // String baseUri = 'http://192.168.0.10:8080';
 
   Future initCamera(CameraDescription cameraDescription) async {
     _cameraController =
@@ -58,12 +53,29 @@ class _CameraPageState extends State<CameraPage> {
       int angle = 0;
       print(orientation);
 
-      if (orientation != CustomOrientation.portrait) {
-        angle = -90;
-        if (orientation == CustomOrientation.leftLandScape) {
+      if (_cameraController.description.lensDirection ==
+          CameraLensDirection.front) {
+        if (orientation != CustomOrientation.portrait) {
           angle = 90;
+          if (orientation == CustomOrientation.leftLandScape) {
+            angle = -90;
+          }
+        }
+      } else {
+        if (orientation != CustomOrientation.portrait) {
+          angle = -90;
+          if (orientation == CustomOrientation.leftLandScape) {
+            angle = 90;
+          }
         }
       }
+
+      // if (orientation != CustomOrientation.portrait) {
+      //   angle = -90;
+      //   if (orientation == CustomOrientation.leftLandScape) {
+      //     angle = 90;
+      //   }
+      // }
 
       List<int> rotatedByte = await picture.readAsBytes();
       img.Image? originImage = img.decodeImage(Uint8List.fromList(rotatedByte));
@@ -154,6 +166,7 @@ class _CameraPageState extends State<CameraPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
         child: Container(
           width: double.infinity,
@@ -161,9 +174,9 @@ class _CameraPageState extends State<CameraPage> {
           child: FittedBox(
             fit: BoxFit.cover,
             child: SizedBox(
-              width: _cameraController.value.previewSize!.height,
-              height: _cameraController.value.previewSize!.width,
-              child: (_cameraController.value.isInitialized)
+              width: _cameraController.value?.previewSize?.height ?? 0,
+              height: _cameraController.value?.previewSize?.width ?? 0,
+              child: (_cameraController.value?.isInitialized ?? false)
                   ? CameraPreview(_cameraController)
                   : Container(
                       color: Colors.black,
@@ -178,6 +191,7 @@ class _CameraPageState extends State<CameraPage> {
           Align(
             alignment: Alignment.bottomCenter,
             child: FloatingActionButton(
+              heroTag: 'takePicture',
               elevation: 0.0,
               backgroundColor: Colors.transparent,
               child: const Icon(
@@ -198,6 +212,7 @@ class _CameraPageState extends State<CameraPage> {
             child: Padding(
               padding: EdgeInsets.only(right: 30),
               child: FloatingActionButton(
+                heroTag: 'changing mode',
                 elevation: 0.0,
                 backgroundColor: Colors.transparent,
                 child: IconButton(
@@ -223,6 +238,7 @@ class _CameraPageState extends State<CameraPage> {
             child: Padding(
               padding: EdgeInsets.only(left: 30),
               child: FloatingActionButton(
+                heroTag: 'cancel',
                 elevation: 0.0,
                 backgroundColor: Colors.transparent,
                 child: IconButton(

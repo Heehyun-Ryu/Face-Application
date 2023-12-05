@@ -5,6 +5,7 @@ import 'package:face_appliction/register_List.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:face_appliction/ImageHub.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Child_info {
   String? name;
@@ -12,6 +13,27 @@ class Child_info {
   String? enroll_class;
 
   Child_info({this.name, this.age = 0, this.enroll_class});
+}
+
+final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+Future<void> numbre_of_register() async {
+  var dio = new Dio();
+
+  final SharedPreferences prefs = await _prefs;
+
+  try {
+    await dio.get(
+      baseUri + '/numbre_of_register',
+      queryParameters: {'Num': prefs.getKeys().length.toString()},
+    );
+    print("등록을 성공했습니다.");
+  } catch (e) {
+    print('Error during image upload: $e');
+    if (e is DioException) {
+      print('DioError respose: ${e.response}');
+    }
+  }
 }
 
 class register_page extends StatefulWidget {
@@ -33,12 +55,59 @@ class _register_pageState extends State<register_page> {
   String _nameTextFormFieldValue = '';
   String _ageTextFormFieldValue = '';
 
-  //final Child Child_info = Child();
   final List<Child_info> Child_infoList = [];
 
+  // final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  // "upload\\Kim_5_A.jpg",
+  Future<bool> saveData(String info) async {
+    final SharedPreferences prefs = await _prefs;
+    print(info);
+    print('upload\\thumbnail_${info.split('_').first}.jpg');
+
+    if (!prefs.containsKey(info)) {
+      for (var c in prefs.getKeys()) {
+        if (c.split('_')[0] == info.split('_')[0]) {
+          return true;
+        }
+      }
+      //laptop
+      prefs.setString(info, 'upload\\thumbnail_${info.split('_').first}.jpg');
+
+      //jetson
+      // prefs.setString(info, 'upload/thumbnail_${info.split('_').first}.jpg');
+
+      return false;
+    } else {
+      print("get a way");
+      return true;
+    }
+
+    print(prefs.getKeys());
+  }
+
+  bool check = false;
+  Future<void> saveDataFunc() async {
+    check = await saveData(
+        '${nameController.text}_${ageController.text}_${_selectedState}');
+  }
+
+  void removeall() async {
+    final SharedPreferences remv = await _prefs;
+
+    Set<String> keys = remv.getKeys();
+
+    // keys.forEach((element) => remv.remove(element));
+    remv.clear();
+
+    print("RemoveAll");
+    print(remv.getKeys());
+  }
+
   // Duplication check!
-  void _saveData() {
+  void _saveData() async {
     setState(() {
+      // List<String> keys = _prefs.getKeys().where((k) => k.startsWith('item_'));
       // Child.name = nameController.text;
       // Child.age = int.tryParse(ageController.text) ?? 0;
       // Child.enroll_class = _selectedState;
@@ -57,19 +126,21 @@ class _register_pageState extends State<register_page> {
     });
   }
 
-  Future<void> RegisterImage(File? img, Child_info chif) async {
+  Future<void> RegisterImage(File? img, String chif) async {
     var dio = new Dio();
 
     print("사진을 등록합니다.");
+    print(chif);
+    print(chif.split('_'));
     try {
       dio.options.contentType = 'multipart/form-data';
       dio.options.maxRedirects.isFinite;
 
       var formData = FormData.fromMap({
         'image': await MultipartFile.fromFile(img!.path),
-        'Name': chif.name,
-        'Age': chif.age,
-        '_Class': chif.enroll_class
+        'Name': chif.split('_')[0],
+        'Age': chif.split('_')[1],
+        '_Class': chif.split('_')[2],
       });
       await dio.post(
         baseUri + '/register',
@@ -115,10 +186,6 @@ class _register_pageState extends State<register_page> {
                   Container(
                     height: 230,
                     width: 200,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                      color: Colors.blue,
-                    )),
                     child: GestureDetector(
                         onTap: () {
                           getImage(ImageSource.gallery);
@@ -233,10 +300,13 @@ class _register_pageState extends State<register_page> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
+                          onPressed: numbre_of_register, child: Text('temp')),
+                      ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             minimumSize: Size(100, 50)),
-                        onPressed: () {
+                        onPressed: () async {
                           final formKeyState = _nameformkey.currentState;
+
                           if (formKeyState!.validate()) {
                             formKeyState?.save();
                           }
@@ -261,8 +331,25 @@ class _register_pageState extends State<register_page> {
                               age: int.parse(ageController.text),
                               enroll_class: _selectedState);
 
-                          _saveData();
-                          RegisterImage(File(_image!.path), temp);
+                          // saveData('${nameController.text}_${ageController.text}_${_selectedState}');
+
+                          await saveDataFunc();
+
+                          if (check) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                'duplication!',
+                                textAlign: TextAlign.center,
+                              ),
+                              duration: Duration(seconds: 6),
+                            ));
+                            return;
+                          }
+
+                          // _saveData();
+                          RegisterImage(File(_image!.path),
+                              '${nameController.text}_${ageController.text}_${_selectedState}');
+                          numbre_of_register();
 
                           for (var c in Child_infoList) {
                             print(
@@ -289,8 +376,7 @@ class _register_pageState extends State<register_page> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => register_list(
-                                      child_infoList: Child_infoList)),
+                                  builder: (context) => register_list()),
                             );
                           },
                           child: Text(

@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-// import 'package:face_appliction/photo_detail.dart';
 import 'package:face_appliction/register.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:camera/camera.dart';
 import 'package:face_appliction/take_picture.dart';
 import 'package:flutter/services.dart';
@@ -24,10 +22,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  // var url = Uri.parse('http://192.168.0.9:8080/classify');
   var url = Uri.parse('$baseUri/classify');
-
-  // var url = Uri.parse('http://192.168.0.79:8080/classify');
 
   ImageHub? imageHub;
 
@@ -44,19 +39,6 @@ class _HomepageState extends State<Homepage> {
     setState(() {
       imageHub = ImageHub.fromJson(decordedJSON);
     });
-  }
-
-  XFile? _image;
-  final ImagePicker picker = ImagePicker();
-
-  Future getImage(ImageSource imageSource) async {
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      setState(() {
-        _image = XFile(pickedFile.path);
-      });
-    }
   }
 
   // multi images
@@ -125,7 +107,7 @@ class _HomepageState extends State<Homepage> {
                             Expanded(
                               flex: 1,
                               child: Text(
-                                entry.key,
+                                entry.key.split('_').last,
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
